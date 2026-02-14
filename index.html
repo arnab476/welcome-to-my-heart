@@ -22,6 +22,7 @@ body{
     position:relative;
     color:white;
     padding:20px;
+    overflow:hidden;
 }
 
 .active{display:flex;}
@@ -56,23 +57,29 @@ button{
 
 #countdown{font-size:24px;margin-top:15px;}
 
-.emoji{
-    position:absolute;
-    opacity:0.15;
-    animation: float 8s linear infinite;
-    pointer-events:none;
-}
-
-@keyframes float{
-    0%{transform:translateY(100%);opacity:0;}
-    20%{opacity:0.15;}
-    100%{transform:translateY(-120%);opacity:0;}
-}
+/* PAGE BACKGROUNDS */
 
 #page1{background:linear-gradient(135deg,#ff758c,#ff7eb3);}
 #page2{background:linear-gradient(135deg,#ff6a88,#ff99ac);}
 #page3{background:linear-gradient(135deg,#ff4d6d,#ff8fa3);}
 #page4{background:linear-gradient(135deg,#ff5e78,#ff9bb3);}
+
+/* TOP EMOJI RAIN */
+
+.rain{
+    position:absolute;
+    top:-50px;
+    animation: fall linear infinite;
+    opacity:0.2;
+    pointer-events:none;
+}
+
+@keyframes fall{
+    0%{transform:translateY(-10%);}
+    100%{transform:translateY(120%);}
+}
+
+/* HEART BLAST */
 
 .heart{
     position:fixed;
@@ -150,7 +157,7 @@ button{font-size:16px;padding:12px 20px;}
 
 <script>
 
-/* Emoji themes */
+/* Emoji themes per page */
 const themes = {
     page1:["💖","✨","💕","🌸"],
     page2:["🥺","💞","🌹"],
@@ -158,24 +165,26 @@ const themes = {
     page4:["💝","💓","🎶"]
 };
 
-function createEmoji(pageId){
+function createRain(pageId){
     let page=document.getElementById(pageId);
     let emoji=document.createElement("div");
-    emoji.className="emoji";
+    emoji.className="rain";
     let list=themes[pageId];
     emoji.innerHTML=list[Math.floor(Math.random()*list.length)];
     emoji.style.left=Math.random()*100+"%";
     emoji.style.fontSize=(20+Math.random()*30)+"px";
+    emoji.style.animationDuration=(5+Math.random()*5)+"s";
     page.appendChild(emoji);
-    setTimeout(()=>{emoji.remove();},8000);
+    setTimeout(()=>{emoji.remove();},10000);
 }
 
 setInterval(()=>{
     let active=document.querySelector(".page.active");
-    if(active){ createEmoji(active.id); }
-},600);
+    if(active){ createRain(active.id); }
+},500);
 
 /* Sound */
+
 function playClick(){
     let click=document.getElementById("clickSound");
     click.currentTime=0;
@@ -199,6 +208,7 @@ function goWithDelay(page){
 }
 
 /* PAGE 2 */
+
 function noPage2(){
     playClick();
     let angry=document.getElementById("angrySound");
@@ -219,6 +229,7 @@ function yesPage2(){
 }
 
 /* PAGE 3 */
+
 function noPage3(){
     playClick();
     let angry=document.getElementById("angrySound");
@@ -239,6 +250,7 @@ function yesPage3(){
 }
 
 /* Heart blast */
+
 function heartBlast(){
     for(let i=0;i<30;i++){
         let heart=document.createElement("div");
@@ -256,6 +268,7 @@ function heartBlast(){
 }
 
 /* Poem */
+
 function startPoem(){
     heartBlast();
     go(4);
