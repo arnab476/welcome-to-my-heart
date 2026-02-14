@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bandr er Message ❤️</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Comic Sans MS;
+    text-align:center;
+    background: linear-gradient(-45deg,#ff758c,#ff7eb3,#ff4d6d,#ff9a9e);
+    background-size:400% 400%;
+    animation: gradientMove 12s ease infinite;
+    overflow:hidden;
+}
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.page{
+    display:none;
+    height:100vh;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    color:white;
+    padding:20px;
+}
+
+.active{display:flex;}
+
+button{
+    padding:15px 25px;
+    font-size:18px;
+    margin:10px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+}
+
+.yes{background:#ff4d6d;color:white;}
+.no{background:white;color:red;}
+
+.monkey{
+    width:150px;
+    margin-top:15px;
+    display:none;
+}
+
+.thumbnail{
+    width:220px;
+    border-radius:15px;
+    margin-top:15px;
+    display:none;
+}
+
+/* Heart Blast */
+.heart{
+    position:fixed;
+    font-size:30px;
+    animation: explode 1.5s ease-out forwards;
+    pointer-events:none;
+}
+
+@keyframes explode{
+    0%{transform:translate(0,0);opacity:1;}
+    100%{transform:translate(var(--x),var(--y));opacity:0;}
+}
+
+h1,h2{
+    text-shadow:0 0 15px rgba(255,255,255,0.9);
+}
+
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" src="love.mp3"></audio>
+<audio id="poemAudio" src="poem.mp3"></audio>
+<audio id="clickSound" src="click.mp3"></audio>
+<audio id="angrySound" src="angry.mp3"></audio>
+
+<!-- PAGE 1 -->
+<div id="page1" class="page active">
+    <h1>Welcome To My Heart ❤️</h1>
+    <button class="yes" onclick="go(2)">🐒 Monkey Give You Something 🎁</button>
+</div>
+
+<!-- PAGE 2 -->
+<div id="page2" class="page">
+    <h1>Can I Ask One Question? 🥺</h1>
+    <button class="yes" onclick="yesPage2()">Yes 💖</button>
+    <button class="no" onclick="noPage2()">No 🙈</button>
+    <img id="monkey1" class="monkey">
+    <p id="msg1"></p>
+</div>
+
+<!-- PAGE 3 -->
+<div id="page3" class="page">
+    <h1>Will You Be My Valentine? 💘</h1>
+    <button class="yes" onclick="startPoem()">Yes ❤️</button>
+    <button class="no" onclick="noPage3()">No 🙊</button>
+    <img id="monkey2" class="monkey">
+    <p id="msg2"></p>
+</div>
+
+<!-- PAGE 4 -->
+<div id="page4" class="page">
+    <h2>
+    জীবন চলছিল না সোজা পথে, ছিল সবই অধরা,<br><br>
+    হঠাৎ করেই এলো কেউ, দিলাম তাতে ধরা,<br><br>
+    মায়ায় ফেলেছে আমাকে এক মায়াবী বসুন্ধরা। ❤️
+    </h2>
+
+    <h3 id="countdown"></h3>
+
+    <button id="songBtn" class="yes" onclick="playMusic()" style="display:none;">
+        Play Our Song 💞
+    </button>
+
+    <img id="thumb" class="thumbnail" src="thumbnail.jpg">
+</div>
+
+<script>
+
+function playClick(){
+    let click=document.getElementById("clickSound");
+    click.currentTime=0;
+    click.play();
+}
+
+function stopAngry(){
+    let angry=document.getElementById("angrySound");
+    angry.pause();
+    angry.currentTime=0;
+}
+
+function go(page){
+    playClick();
+    stopAngry();
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("page"+page).classList.add("active");
+}
+
+/* PAGE 2 */
+
+function noPage2(){
+    playClick();
+    let angry=document.getElementById("angrySound");
+    angry.currentTime=0;
+    angry.play();
+
+    document.getElementById("monkey1").src="angry.png";
+    document.getElementById("monkey1").style.display="block";
+    document.getElementById("msg1").innerHTML="🙊 Monkey don't like NO!";
+}
+
+function yesPage2(){
+    playClick();
+    stopAngry();
+
+    document.getElementById("monkey1").src="smile.png";
+    document.getElementById("monkey1").style.display="block";
+    document.getElementById("msg1").innerHTML="🐒 Monkey loves YES!";
+
+    setTimeout(()=>{ go(3); },1000);
+}
+
+/* PAGE 3 */
+
+function noPage3(){
+    playClick();
+    let angry=document.getElementById("angrySound");
+    angry.currentTime=0;
+    angry.play();
+
+    document.getElementById("monkey2").src="angry.png";
+    document.getElementById("monkey2").style.display="block";
+    document.getElementById("msg2").innerHTML="😡 Only YES allowed!";
+}
+
+/* HEART BLAST */
+
+function heartBlast(){
+    for(let i=0;i<30;i++){
+        let heart=document.createElement("div");
+        heart.className="heart";
+        heart.innerHTML="💖";
+        heart.style.left="50%";
+        heart.style.top="50%";
+        let x=(Math.random()*500-250)+"px";
+        let y=(Math.random()*500-250)+"px";
+        heart.style.setProperty('--x',x);
+        heart.style.setProperty('--y',y);
+        document.body.appendChild(heart);
+        setTimeout(()=>{heart.remove();},1500);
+    }
+}
+
+/* POEM FLOW */
+
+function startPoem(){
+    playClick();
+    stopAngry();
+    heartBlast();
+    go(4);
+
+    let poem=document.getElementById("poemAudio");
+    poem.currentTime=0;
+    poem.play();
+
+    poem.onended=function(){
+        startCountdown();
+    };
+}
+
+function startCountdown(){
+    let count=5;
+    let cd=document.getElementById("countdown");
+    cd.innerHTML="Wait... "+count;
+
+    let interval=setInterval(()=>{
+        count--;
+        cd.innerHTML="Wait... "+count;
+        if(count<=0){
+            clearInterval(interval);
+            cd.innerHTML="";
+            document.getElementById("songBtn").style.display="block";
+        }
+    },1000);
+}
+
+function playMusic(){
+    playClick();
+    document.getElementById("thumb").style.display="block";
+    document.getElementById("bgMusic").play();
+}
+
+</script>
+
+</body>
+</html>
