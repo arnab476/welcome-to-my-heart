@@ -10,16 +10,7 @@ body{
     margin:0;
     font-family:Comic Sans MS;
     text-align:center;
-    background: linear-gradient(-45deg,#ff758c,#ff7eb3,#ff4d6d,#ff9a9e);
-    background-size:400% 400%;
-    animation: gradientMove 10s ease infinite;
     overflow:hidden;
-}
-
-@keyframes gradientMove{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
 }
 
 .page{
@@ -28,20 +19,15 @@ body{
     justify-content:center;
     align-items:center;
     flex-direction:column;
+    position:relative;
     color:white;
     padding:20px;
 }
 
 .active{display:flex;}
 
-h1{
-    font-size:38px;
-}
-
-h2{
-    font-size:26px;
-    line-height:1.6;
-}
+h1{font-size:38px;}
+h2{font-size:26px;line-height:1.6;}
 
 button{
     padding:16px 28px;
@@ -68,7 +54,26 @@ button{
     display:none;
 }
 
-/* Heart blast */
+#countdown{font-size:24px;margin-top:15px;}
+
+.emoji{
+    position:absolute;
+    opacity:0.15;
+    animation: float 8s linear infinite;
+    pointer-events:none;
+}
+
+@keyframes float{
+    0%{transform:translateY(100%);opacity:0;}
+    20%{opacity:0.15;}
+    100%{transform:translateY(-120%);opacity:0;}
+}
+
+#page1{background:linear-gradient(135deg,#ff758c,#ff7eb3);}
+#page2{background:linear-gradient(135deg,#ff6a88,#ff99ac);}
+#page3{background:linear-gradient(135deg,#ff4d6d,#ff8fa3);}
+#page4{background:linear-gradient(135deg,#ff5e78,#ff9bb3);}
+
 .heart{
     position:fixed;
     font-size:35px;
@@ -81,25 +86,21 @@ button{
     100%{transform:translate(var(--x),var(--y));opacity:0;}
 }
 
-#countdown{
-    font-size:24px;
-    margin-top:15px;
-}
-
-/* Mobile */
 @media (max-width:600px){
-
 h1{font-size:26px;}
 h2{font-size:18px;}
 button{font-size:16px;padding:12px 20px;}
 .monkey{width:150px;}
 .thumbnail{width:200px;}
-
 }
 
 </style>
 </head>
 <body>
+
+<!-- Preload monkey images -->
+<img src="angry.png" style="display:none;">
+<img src="smile.png" style="display:none;">
 
 <audio id="bgMusic" src="love.mp3"></audio>
 <audio id="poemAudio" src="poem.mp3"></audio>
@@ -109,7 +110,7 @@ button{font-size:16px;padding:12px 20px;}
 <!-- PAGE 1 -->
 <div id="page1" class="page active">
     <h1>Welcome To My Heart ❤️</h1>
-    <button class="yes" onclick="go(2)">🐒 Monkey Give You Something 🎁</button>
+    <button class="yes" onclick="goWithDelay(2)">🐒 Monkey Give You Something 🎁</button>
 </div>
 
 <!-- PAGE 2 -->
@@ -124,7 +125,7 @@ button{font-size:16px;padding:12px 20px;}
 <!-- PAGE 3 -->
 <div id="page3" class="page">
     <h1>Will You Be My Valentine? 💘</h1>
-    <button class="yes" onclick="startPoem()">Yes ❤️</button>
+    <button class="yes" onclick="yesPage3()">Yes ❤️</button>
     <button class="no" onclick="noPage3()">No 🙊</button>
     <img id="monkey2" class="monkey">
     <p id="msg2"></p>
@@ -149,6 +150,32 @@ button{font-size:16px;padding:12px 20px;}
 
 <script>
 
+/* Emoji themes */
+const themes = {
+    page1:["💖","✨","💕","🌸"],
+    page2:["🥺","💞","🌹"],
+    page3:["💘","❤️","😍"],
+    page4:["💝","💓","🎶"]
+};
+
+function createEmoji(pageId){
+    let page=document.getElementById(pageId);
+    let emoji=document.createElement("div");
+    emoji.className="emoji";
+    let list=themes[pageId];
+    emoji.innerHTML=list[Math.floor(Math.random()*list.length)];
+    emoji.style.left=Math.random()*100+"%";
+    emoji.style.fontSize=(20+Math.random()*30)+"px";
+    page.appendChild(emoji);
+    setTimeout(()=>{emoji.remove();},8000);
+}
+
+setInterval(()=>{
+    let active=document.querySelector(".page.active");
+    if(active){ createEmoji(active.id); }
+},600);
+
+/* Sound */
 function playClick(){
     let click=document.getElementById("clickSound");
     click.currentTime=0;
@@ -166,14 +193,17 @@ function go(page){
     document.getElementById("page"+page).classList.add("active");
 }
 
-/* PAGE 2 */
+function goWithDelay(page){
+    playClick();
+    setTimeout(()=>{ go(page); },4000);
+}
 
+/* PAGE 2 */
 function noPage2(){
     playClick();
     let angry=document.getElementById("angrySound");
     angry.currentTime=0;
     angry.play();
-
     document.getElementById("monkey1").src="angry.png";
     document.getElementById("monkey1").style.display="block";
     document.getElementById("msg1").innerHTML="🙊 Monkey don't like NO!";
@@ -182,31 +212,33 @@ function noPage2(){
 function yesPage2(){
     playClick();
     stopAngry();
-
     document.getElementById("monkey1").src="smile.png";
     document.getElementById("monkey1").style.display="block";
     document.getElementById("msg1").innerHTML="🐒 Monkey loves YES!";
-
-    setTimeout(()=>{
-        go(3);
-    },2000);   // 2 second wait
+    setTimeout(()=>{ go(3); },4000);
 }
 
 /* PAGE 3 */
-
 function noPage3(){
     playClick();
     let angry=document.getElementById("angrySound");
     angry.currentTime=0;
     angry.play();
-
     document.getElementById("monkey2").src="angry.png";
     document.getElementById("monkey2").style.display="block";
     document.getElementById("msg2").innerHTML="😡 Only YES allowed!";
 }
 
-/* Heart Blast */
+function yesPage3(){
+    playClick();
+    stopAngry();
+    document.getElementById("monkey2").src="smile.png";
+    document.getElementById("monkey2").style.display="block";
+    document.getElementById("msg2").innerHTML="💖 Best Choice!";
+    setTimeout(()=>{ startPoem(); },4000);
+}
 
+/* Heart blast */
 function heartBlast(){
     for(let i=0;i<30;i++){
         let heart=document.createElement("div");
@@ -223,11 +255,8 @@ function heartBlast(){
     }
 }
 
-/* Poem Flow */
-
+/* Poem */
 function startPoem(){
-    playClick();
-    stopAngry();
     heartBlast();
     go(4);
 
@@ -244,7 +273,6 @@ function startCountdown(){
     let count=5;
     let cd=document.getElementById("countdown");
     cd.innerHTML="Wait... "+count;
-
     let interval=setInterval(()=>{
         count--;
         cd.innerHTML="Wait... "+count;
